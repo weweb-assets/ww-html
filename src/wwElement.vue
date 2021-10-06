@@ -116,7 +116,7 @@ export default {
         color: var(--ww-color-blue-500);
     }
     /* wwEditor:end */
-    html {
+    iframe {
         position: relative;
         width: 100% !important;
         height: 100% !important;
@@ -126,7 +126,7 @@ export default {
 
 <style lang="scss">
 .ww-html {
-    html {
+    iframe {
         width: 100%;
         height: 100%;
         border: 0;
