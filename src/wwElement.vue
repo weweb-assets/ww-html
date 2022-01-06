@@ -35,11 +35,7 @@ export default {
         },
         source() {
             if (this.reset) return null;
-            if (this.content.source) {
-                if (this.content.source.indexOf('<script') !== -1 && window.__WW_IS_PRERENDER__) return null;
-                return this.content.source;
-            }
-            return null;
+            return this.content.source ? this.content.source : null;
         },
         script() {
             return this.content.script || null;
