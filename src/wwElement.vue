@@ -12,6 +12,10 @@
 import { openHTMLPopup } from './popups';
 /* wwEditor:end */
 
+const REGEX_SRC = /.*?src="(.*?)"/gim;
+const REGEX_CHARSET = /.*?charset="(.*?)"/gim;
+const REGEX_CONTENT = /<script.*>(.*)<\/script>/gim;
+
 export default {
     props: {
         /* wwEditor:start */
@@ -22,6 +26,7 @@ export default {
     emits: ['update:content'],
     data() {
         return {
+            uid: null,
             reset: false,
         };
     },
@@ -37,47 +42,85 @@ export default {
             if (this.reset) return null;
             return this.content.source ? this.content.source : null;
         },
-        script() {
-            return this.content.script || null;
+        scripts() {
+            if (typeof this.content.source !== 'string') return [];
+            const rawScripts = this.content.source.match(/<script.*><\/script>/g) || [];
+            return rawScripts.map(script => {
+                const srcResult = new RegExp(REGEX_SRC).exec(script);
+                const charsetResult = new RegExp(REGEX_CHARSET).exec(script);
+                const contentResult = new RegExp(REGEX_CONTENT).exec(script);
+                return {
+                    src: srcResult && srcResult[1],
+                    charset: charsetResult && charsetResult[1],
+                    async: script.includes(' async'),
+                    content: contentResult && contentResult[1],
+                    attributes: {
+                        'ww-html-custom-uid': this.uid,
+                    },
+                };
+            });
         },
-        javascript() {
-            return this.content.javascript || null;
-        },
+    },
+    created() {
+        this.uid = wwLib.wwUtils.getUniqueId();
     },
     mounted() {
         this.init();
-        window.addEventListener('resize', this.reinit);
+        /* wwFront:start */
+        wwLib.getFrontWindow().addEventListener('resize', this.reinit);
+        /* wwFront:end */
+    },
+    watch: {
+        scripts() {
+            this.init();
+        },
+        isEditing(value) {
+            if (!value) this.init();
+        },
     },
     methods: {
         async init() {
-            if (this.script) {
-                await this.loadScript();
-            }
-            if (this.javascript) {
-                this.loadJavascript();
-            }
-        },
-        async editHTML() {
             try {
-                const result = await openHTMLPopup({
-                    source: this.content.source,
-                });
-                this.$emit('update:content', { source: result.source });
-                this.reinit();
-            } catch (err) {
-                wwLib.wwLog.error(err);
-            }
-        },
-        async loadScript() {
-            await wwLib.wwUtils.addScriptToHead(this.script);
-        },
-        loadJavascript() {
-            try {
-                eval(this.javascript);
+                await this.loadScripts();
+                this.executeJavascript();
             } catch (error) {
                 wwLib.wwLog.error(error, 'error');
             }
         },
+        async editHTML() {
+            const result = await openHTMLPopup({
+                source: this.content.source,
+            });
+            this.$emit('update:content', { source: result.source });
+        },
+        async loadScripts() {
+            if (window.__WW_IS_PRERENDER__) return;
+            // Remove old scripts
+            wwLib
+                .getFrontDocument()
+                .head.querySelectorAll(`script[ww-html-custom-uid="${this.uid}"]`)
+                .forEach(script => script.remove());
+            await Promise.all(
+                this.scripts
+                    .filter(script => script.src)
+                    .map(script =>
+                        wwLib.wwUtils.addScriptToHead(
+                            {
+                                link: script.src,
+                                async: script.async,
+                                charset: script.charset,
+                                attributes: script.attributes,
+                            },
+                            true
+                        )
+                    )
+            );
+        },
+        executeJavascript() {
+            if (window.__WW_IS_PRERENDER__) return;
+            this.scripts.filter(script => script.content).forEach(script => eval(script.content));
+        },
+        /* wwFront:start */
         reinit() {
             this.reset = true;
             this.$nextTick(() => {
@@ -85,9 +128,12 @@ export default {
                 this.init();
             });
         },
+        /* wwFront:end */
     },
     beforeUnmounted() {
-        window.removeEventListener('resize', this.reinit);
+        /* wwFront:start */
+        wwLib.getFrontWindow().removeEventListener('resize', this.reinit);
+        /* wwFront:end */
     },
 };
 </script>
