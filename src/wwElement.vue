@@ -44,7 +44,7 @@ export default {
         },
         scripts() {
             if (typeof this.content.source !== 'string') return [];
-            const rawScripts = this.content.source.match(/<script.*<\/script>/g) || [];
+            const rawScripts = [...this.content.source.matchAll(/<script.*?>.*?<\/script>/gim)].map(item => item[0]);
             return rawScripts.map(script => {
                 const srcResult = new RegExp(REGEX_SRC).exec(script);
                 const charsetResult = new RegExp(REGEX_CHARSET).exec(script);
