@@ -44,7 +44,7 @@ export default {
         },
         scripts() {
             if (typeof this.content.source !== 'string') return [];
-            const rawScripts = this.content.source.match(/<script.*><\/script>/g) || [];
+            const rawScripts = this.content.source.match(/<script.*<\/script>/g) || [];
             return rawScripts.map(script => {
                 const srcResult = new RegExp(REGEX_SRC).exec(script);
                 const charsetResult = new RegExp(REGEX_CHARSET).exec(script);
@@ -97,7 +97,7 @@ export default {
                 .getFrontDocument()
                 .head.querySelectorAll(`script[ww-html-uid="${this.uid}"]`)
                 .forEach(script => script.remove());
-            await Promise.all(
+            return Promise.all(
                 this.scripts
                     .filter(script => script.src)
                     .map(script =>
