@@ -22,11 +22,11 @@ export default {
         wwEditorState: { type: Object, required: true },
         /* wwEditor:end */
         content: { type: Object, required: true },
+        uid: { type: String, required: true },
     },
     emits: ['update:content'],
     data() {
         return {
-            uid: null,
             reset: false,
         };
     },
@@ -55,14 +55,11 @@ export default {
                     async: script.includes(' async'),
                     content: contentResult && contentResult[1],
                     attributes: {
-                        'ww-html-custom-uid': this.uid,
+                        'ww-html-uid': this.uid,
                     },
                 };
             });
         },
-    },
-    created() {
-        this.uid = wwLib.wwUtils.getUniqueId();
     },
     mounted() {
         this.init();
@@ -98,7 +95,7 @@ export default {
             // Remove old scripts
             wwLib
                 .getFrontDocument()
-                .head.querySelectorAll(`script[ww-html-custom-uid="${this.uid}"]`)
+                .head.querySelectorAll(`script[ww-html-uid="${this.uid}"]`)
                 .forEach(script => script.remove());
             await Promise.all(
                 this.scripts
