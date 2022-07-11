@@ -119,6 +119,7 @@ export default {
         },
         /* wwFront:start */
         reinit() {
+            if (!this.content.refreshOnResize) return
             this.reset = true;
             this.$nextTick(() => {
                 this.reset = false;

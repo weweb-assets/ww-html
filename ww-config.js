@@ -29,5 +29,12 @@ export default {
                 action: 'editHTML',
             },
         },
+        refreshOnResize: {
+            type: 'OnOff',
+            label: {
+                en: 'Refresh on resize'
+            },
+            defaultValue: true
+        }
     },
 };
