@@ -8,10 +8,6 @@
 </template>
 
 <script>
-/* wwEditor:start */
-import { openHTMLPopup } from './popups';
-/* wwEditor:end */
-
 const REGEX_SRC = /.*?src="(.*?)"/gim;
 const REGEX_CHARSET = /.*?charset="(.*?)"/gim;
 const REGEX_CONTENT = /<script.*>(.*)<\/script>/gim;
@@ -84,12 +80,6 @@ export default {
                 wwLib.wwLog.error(error, 'error');
             }
         },
-        async editHTML() {
-            const result = await openHTMLPopup({
-                source: this.content.source,
-            });
-            this.$emit('update:content', { source: result.source });
-        },
         async loadScripts() {
             if (window.__WW_IS_PRERENDER__) return;
             // Remove old scripts
@@ -119,7 +109,7 @@ export default {
         },
         /* wwFront:start */
         reinit() {
-            if (!this.content.refreshOnResize) return
+            if (!this.content.refreshOnResize) return;
             this.reset = true;
             this.$nextTick(() => {
                 this.reset = false;
