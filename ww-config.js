@@ -14,27 +14,19 @@ export default {
             label: {
                 en: 'HTML',
             },
-            type: 'Textarea',
+            type: 'Text',
             options: {
-                row: 20,
+                expandable: true,
             },
             bindable: true,
             defaultValue: '',
         },
-        changeSource: {
-            type: 'Button',
-            editorOnly: true,
-            options: {
-                text: { en: 'Edit HTML', fr: 'Editer le HTML' },
-                action: 'editHTML',
-            },
-        },
         refreshOnResize: {
             type: 'OnOff',
             label: {
-                en: 'Refresh on resize'
+                en: 'Refresh on resize',
             },
-            defaultValue: true
-        }
+            defaultValue: true,
+        },
     },
 };
