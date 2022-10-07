@@ -1,5 +1,8 @@
 <template>
     <div class="ww-html-popup ww-scroll-bar">
+        <wwEditorTip v-if="warning" icon="warning" color="yellow" class="my-2">
+            Validation error : You next publishes may fail.
+        </wwEditorTip>
         <textarea
             v-model="source"
             class="script__input ww-editor-input -textarea -large caption-m"
@@ -25,6 +28,11 @@ export default {
         return {
             source: undefined,
         };
+    },
+    computed: {
+        warning() {
+            return this.source !== wwLib.getValidHTML(this.source);
+        },
     },
     mounted() {
         this.source = this.options.data.options.source;
