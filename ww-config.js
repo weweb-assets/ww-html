@@ -16,7 +16,7 @@ export default {
             en: 'HTML',
             fr: 'HTML',
         },
-        icon: 'fontawesome/regular/window-maximize',
+        icon: 'code',
     },
     properties: {
         source: {
