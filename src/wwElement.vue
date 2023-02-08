@@ -165,5 +165,9 @@ export default {
         height: 100%;
         border: 0;
     }
+
+    a {
+        display: inline;
+    }
 }
 </style>
