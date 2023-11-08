@@ -25,7 +25,8 @@ export default {
             },
             type: 'Text',
             options: {
-                expandable: true,
+                code: true,
+                language: 'html',
             },
             bindable: true,
             defaultValue: '',
