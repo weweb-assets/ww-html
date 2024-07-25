@@ -42,7 +42,7 @@ export default {
             label: {
                 en: 'Refresh on resize',
             },
-            defaultValue: true,
+            defaultValue: false,
         },
     },
 };
