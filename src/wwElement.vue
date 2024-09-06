@@ -129,15 +129,14 @@ export default {
 <style lang="scss" scoped>
 .ww-html {
     position: relative;
-    width: 100%;
-    height: 100%;
-    min-height: 10px;
     .html-holder {
         height: 100%;
     }
     /* wwEditor:start */
-    &.isEditing {
-        pointer-events: none;
+    &.isEditing::before {
+        content: '';
+        position: absolute;
+        inset: 0;
     }
     .placeholder {
         width: 100%;
